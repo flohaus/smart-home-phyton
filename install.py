@@ -176,10 +176,31 @@ def main():
     
     if success:
         print(f"{Colors.OKGREEN}{Colors.BOLD}   ✓ Installation erfolgreich abgeschlossen!{Colors.ENDC}")
-        print(f"\n{Colors.OKCYAN}Nächste Schritte:{Colors.ENDC}")
-        print(f"   • Neustart empfohlen: sudo reboot")
-        print(f"   • Docker Funktionalität testen: docker --version")
-        print(f"   • Docker Compose testen: docker-compose --version")
+        print(f"\n{Colors.WARNING}Nach der Docker-Installation ist ein Neustart erforderlich, damit alle Änderungen wirksam werden.{Colors.ENDC}")
+        print(f"{Colors.OKCYAN}Insbesondere die Docker-Gruppenmitgliedschaft wird erst nach dem Neustart aktiv.{Colors.ENDC}\n")
+        
+        # Neustart-Bestätigung
+        reboot_response = input(f"{Colors.BOLD}Möchten Sie das System jetzt neu starten? (J/n): {Colors.ENDC}").lower()
+        if reboot_response in ['', 'j', 'ja', 'y', 'yes']:
+            print(f"\n{Colors.OKBLUE}🔄 System wird neu gestartet...{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}Nach dem Neustart können Sie Docker ohne sudo verwenden.{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}Testen Sie mit: docker --version{Colors.ENDC}")
+            
+            # 3 Sekunden Countdown
+            for i in range(3, 0, -1):
+                print(f"{Colors.WARNING}Neustart in {i} Sekunden...{Colors.ENDC}")
+                time.sleep(1)
+            
+            try:
+                subprocess.run(['reboot'], check=True)
+            except subprocess.CalledProcessError:
+                print(f"{Colors.FAIL}Fehler beim Neustart. Bitte manuell neustarten: sudo reboot{Colors.ENDC}")
+        else:
+            print(f"\n{Colors.OKCYAN}Manueller Neustart erforderlich:{Colors.ENDC}")
+            print(f"   • System neustarten: sudo reboot")
+            print(f"   • Docker Funktionalität testen: docker --version")
+            print(f"   • Docker Compose testen: docker-compose --version")
+        
         print(f"\n{Colors.WARNING}Hinweis: OpenHAB, Zigbee2MQTT und Mosquitto werden in zukünftigen Versionen implementiert.{Colors.ENDC}")
     else:
         print(f"{Colors.FAIL}{Colors.BOLD}   ✗ Installation unvollständig - bitte Fehler prüfen{Colors.ENDC}")
