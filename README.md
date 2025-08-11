@@ -41,14 +41,24 @@ Dieses Projekt hat zum Ziel, ein vollständig automatisiertes Smart Home System 
 
 ### Vollständige Installation (Empfohlen)
 
-#### Option 1: One-Click Installation (Einfachste Methode)
+#### Vollautomatische Installation ⭐
 
 ```bash
-# Komplettes Setup in einem Befehl
-curl -sSL https://raw.githubusercontent.com/flohaus/smart-home-phyton/master/quick-install.sh | sudo bash
+# Komplett automatische Installation - Null Benutzerinteraktion
+curl -sSL https://raw.githubusercontent.com/flohaus/smart-home-phyton/master/auto-install.sh | sudo bash
 ```
 
-#### Option 2: Schritt-für-Schritt Installation
+**Das macht das Skript automatisch:**
+- ✅ System-Update (apt update & upgrade)
+- ✅ Python3, Git, curl, wget installieren
+- ✅ Docker & Docker Compose installieren
+- ✅ Repository klonen nach `/opt/smart-home-system`
+- ✅ Smart Home System installieren
+- ✅ Automatischen Neustart (mit 10s Countdown)
+
+#### Alternative: Schritt-für-Schritt Installation
+
+Falls du mehr Kontrolle willst oder Probleme mit der automatischen Installation hast:
 
 ##### Schritt 1: Basis-Tools installieren
 
@@ -105,7 +115,7 @@ sudo usermod -aG docker pi
 
 ```
 smart-home-phyton/
-├── quick-install.sh    # One-Click Komplettinstallation
+├── auto-install.sh     # 🌟 Vollautomatische Installation (Empfohlen)
 ├── setup-basics.py     # Basis-Tools Installation (Git, Python3, etc.)
 ├── install.py          # Hauptinstallationsskript  
 ├── README.md          # Diese Datei
