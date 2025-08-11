@@ -29,7 +29,7 @@ print_banner() {
     echo "║                                                               ║"
     echo "║           🏠 SMART HOME KOMPLETTINSTALLATION 🏠               ║"
     echo "║                                                               ║"
-    echo "║                  Raspberry Pi Setup                          ║"
+    echo "║                  Raspberry Pi Setup                           ║"
     echo "║                                                               ║"
     echo "╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -92,11 +92,22 @@ install_smart_home() {
     fi
 }
 
-# Repository klonen (falls nicht lokal)
+# Repository klonen (nach Git-Installation)
 clone_repo() {
+    # Prüfe erneut ob Git verfügbar ist
+    if ! command -v git &> /dev/null; then
+        echo -e "${RED}❌ Git ist nicht verfügbar - Repository kann nicht geklont werden${NC}"
+        return 1
+    fi
+    
     if [ ! -d ".git" ]; then
         echo -e "${BLUE}📥 Klone Repository...${NC}"
-        cd /tmp
+        
+        # Arbeitsverzeichnis für temporäre Installation
+        WORK_DIR="/tmp/smart-home-install-$$"
+        mkdir -p "$WORK_DIR"
+        cd "$WORK_DIR"
+        
         git clone https://github.com/flohaus/smart-home-phyton.git
         cd smart-home-phyton
         echo -e "${GREEN}✓ Repository geklont${NC}"
@@ -127,6 +138,7 @@ main() {
     # Installationsschritte
     if [ "$need_basics" = true ]; then
         echo -e "${YELLOW}${BOLD}🔧 Basis-Tools werden benötigt${NC}"
+        echo -e "${CYAN}Dies installiert: Git, Python3, curl, wget und weitere Tools${NC}"
         read -p "Basis-Tools jetzt installieren? (J/n): " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Nn]$ ]]; then
@@ -138,8 +150,11 @@ main() {
         echo ""
     fi
     
-    # Repository klonen falls nötig
-    clone_repo
+    # Repository klonen falls nötig (nach Git-Installation)
+    if ! clone_repo; then
+        echo -e "${RED}❌ Repository konnte nicht geklont werden${NC}"
+        exit 1
+    fi
     
     # Smart Home System installieren
     echo -e "${BLUE}${BOLD}🏠 Starte Smart Home Installation...${NC}"
