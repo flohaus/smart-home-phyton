@@ -198,6 +198,8 @@ install_smart_home() {
     fi
     
     echo -e "${CYAN}→ Führe install.py aus...${NC}"
+    # Setze Umgebungsvariable für non-interaktive Ausführung
+    export AUTO_INSTALL=1
     python3 install.py
     
     echo -e "${GREEN}✓ Smart Home System installiert${NC}"

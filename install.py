@@ -152,11 +152,21 @@ def main():
     # Komponenten anzeigen
     print_components()
     
-    # Benutzerbestätigung
-    response = input(f"{Colors.BOLD}Möchten Sie mit der Installation fortfahren? (j/N): {Colors.ENDC}").lower()
-    if response not in ['j', 'ja', 'y', 'yes']:
-        print(f"{Colors.WARNING}Installation abgebrochen.{Colors.ENDC}")
-        sys.exit(0)
+    # Prüfe ob auto-install läuft
+    auto_install = os.environ.get('AUTO_INSTALL', False)
+    
+    if auto_install:
+        print(f"{Colors.OKCYAN}Automatische Installation erkannt - Installation wird fortgesetzt.{Colors.ENDC}")
+    else:
+        # Benutzerbestätigung nur bei manueller Ausführung
+        try:
+            response = input(f"{Colors.BOLD}Möchten Sie mit der Installation fortfahren? (j/N): {Colors.ENDC}").lower()
+            if response not in ['j', 'ja', 'y', 'yes']:
+                print(f"{Colors.WARNING}Installation abgebrochen.{Colors.ENDC}")
+                sys.exit(0)
+        except EOFError:
+            # Non-interaktive Ausführung - automatisch fortfahren
+            print(f"{Colors.OKCYAN}Non-interaktive Ausführung erkannt - Installation wird automatisch fortgesetzt.{Colors.ENDC}")
     
     print(f"\n{Colors.HEADER}{Colors.BOLD}🚀 Installation gestartet...{Colors.ENDC}\n")
     
@@ -176,30 +186,45 @@ def main():
     
     if success:
         print(f"{Colors.OKGREEN}{Colors.BOLD}   ✓ Installation erfolgreich abgeschlossen!{Colors.ENDC}")
-        print(f"\n{Colors.WARNING}Nach der Docker-Installation ist ein Neustart erforderlich, damit alle Änderungen wirksam werden.{Colors.ENDC}")
-        print(f"{Colors.OKCYAN}Insbesondere die Docker-Gruppenmitgliedschaft wird erst nach dem Neustart aktiv.{Colors.ENDC}\n")
         
-        # Neustart-Bestätigung
-        reboot_response = input(f"{Colors.BOLD}Möchten Sie das System jetzt neu starten? (J/n): {Colors.ENDC}").lower()
-        if reboot_response in ['', 'j', 'ja', 'y', 'yes']:
-            print(f"\n{Colors.OKBLUE}🔄 System wird neu gestartet...{Colors.ENDC}")
-            print(f"{Colors.OKCYAN}Nach dem Neustart können Sie Docker ohne sudo verwenden.{Colors.ENDC}")
-            print(f"{Colors.OKCYAN}Testen Sie mit: docker --version{Colors.ENDC}")
-            
-            # 3 Sekunden Countdown
-            for i in range(3, 0, -1):
-                print(f"{Colors.WARNING}Neustart in {i} Sekunden...{Colors.ENDC}")
-                time.sleep(1)
-            
-            try:
-                subprocess.run(['reboot'], check=True)
-            except subprocess.CalledProcessError:
-                print(f"{Colors.FAIL}Fehler beim Neustart. Bitte manuell neustarten: sudo reboot{Colors.ENDC}")
+        # Prüfe ob auto-install läuft
+        auto_install = os.environ.get('AUTO_INSTALL', False)
+        
+        if auto_install:
+            # Bei auto-install.sh wird der Neustart vom Hauptskript übernommen
+            print(f"{Colors.OKCYAN}Docker Installation abgeschlossen. Neustart wird vom Auto-Installer verwaltet.{Colors.ENDC}")
         else:
-            print(f"\n{Colors.OKCYAN}Manueller Neustart erforderlich:{Colors.ENDC}")
-            print(f"   • System neustarten: sudo reboot")
-            print(f"   • Docker Funktionalität testen: docker --version")
-            print(f"   • Docker Compose testen: docker-compose --version")
+            # Manuelle Installation - Neustart anbieten
+            print(f"\n{Colors.WARNING}Nach der Docker-Installation ist ein Neustart erforderlich, damit alle Änderungen wirksam werden.{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}Insbesondere die Docker-Gruppenmitgliedschaft wird erst nach dem Neustart aktiv.{Colors.ENDC}\n")
+            
+            # Neustart-Bestätigung
+            try:
+                reboot_response = input(f"{Colors.BOLD}Möchten Sie das System jetzt neu starten? (J/n): {Colors.ENDC}").lower()
+            except EOFError:
+                # Non-interaktive Ausführung - automatisch neustarten
+                print(f"{Colors.OKCYAN}Non-interaktive Ausführung - System wird automatisch neu gestartet.{Colors.ENDC}")
+                reboot_response = 'j'
+                
+            if reboot_response in ['', 'j', 'ja', 'y', 'yes']:
+                print(f"\n{Colors.OKBLUE}🔄 System wird neu gestartet...{Colors.ENDC}")
+                print(f"{Colors.OKCYAN}Nach dem Neustart können Sie Docker ohne sudo verwenden.{Colors.ENDC}")
+                print(f"{Colors.OKCYAN}Testen Sie mit: docker --version{Colors.ENDC}")
+                
+                # 3 Sekunden Countdown
+                for i in range(3, 0, -1):
+                    print(f"{Colors.WARNING}Neustart in {i} Sekunden...{Colors.ENDC}")
+                    time.sleep(1)
+                
+                try:
+                    subprocess.run(['reboot'], check=True)
+                except subprocess.CalledProcessError:
+                    print(f"{Colors.FAIL}Fehler beim Neustart. Bitte manuell neustarten: sudo reboot{Colors.ENDC}")
+            else:
+                print(f"\n{Colors.OKCYAN}Manueller Neustart erforderlich:{Colors.ENDC}")
+                print(f"   • System neustarten: sudo reboot")
+                print(f"   • Docker Funktionalität testen: docker --version")
+                print(f"   • Docker Compose testen: docker-compose --version")
         
         print(f"\n{Colors.WARNING}Hinweis: OpenHAB, Zigbee2MQTT und Mosquitto werden in zukünftigen Versionen implementiert.{Colors.ENDC}")
     else:
