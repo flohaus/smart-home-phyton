@@ -9,8 +9,10 @@ Dieses Projekt hat zum Ziel, ein vollständig automatisiertes Smart Home System 
 ### 🏠 Smart Home Komponenten
 
 #### ✅ Bereits implementiert:
+- **Basis-Tools Setup**: Git, Python3, pip, curl, wget und weitere essenzielle Tools
 - **System-Update**: Automatische Aktualisierung des Raspberry Pi Systems
 - **Docker & Docker Compose**: Container-Plattform für alle Services
+- **Automatischer Neustart**: Nach Docker-Installation für vollständige Aktivierung
 
 #### 🔄 In Entwicklung / Geplant:
 - **OpenHAB 5**: Open Source Home Automation Platform
@@ -37,7 +39,39 @@ Dieses Projekt hat zum Ziel, ein vollständig automatisiertes Smart Home System 
 - Internetverbindung
 - Root-Zugriff (sudo)
 
-### Schnellinstallation
+### Vollständige Installation (Empfohlen)
+
+#### Option 1: One-Click Installation (Einfachste Methode)
+
+```bash
+# Komplettes Setup in einem Befehl
+curl -sSL https://raw.githubusercontent.com/flohaus/smart-home-phyton/master/quick-install.sh | sudo bash
+```
+
+#### Option 2: Schritt-für-Schritt Installation
+
+##### Schritt 1: Basis-Tools installieren
+
+Falls Git und andere essenzielle Tools noch nicht installiert sind:
+
+```bash
+# Basis-Setup Skript herunterladen und ausführen
+curl -O https://raw.githubusercontent.com/flohaus/smart-home-phyton/master/setup-basics.py
+sudo python3 setup-basics.py
+```
+
+##### Schritt 2: Smart Home System installieren
+
+```bash
+# Repository klonen (nach Basis-Installation)
+git clone https://github.com/flohaus/smart-home-phyton.git
+cd smart-home-phyton
+
+# Smart Home Installationsskript ausführen
+sudo python3 install.py
+```
+
+### Schnellinstallation (wenn Git bereits verfügbar)
 
 ```bash
 # Repository klonen
@@ -71,7 +105,9 @@ sudo usermod -aG docker pi
 
 ```
 smart-home-phyton/
-├── install.py          # Hauptinstallationsskript
+├── quick-install.sh    # One-Click Komplettinstallation
+├── setup-basics.py     # Basis-Tools Installation (Git, Python3, etc.)
+├── install.py          # Hauptinstallationsskript  
 ├── README.md          # Diese Datei
 ├── docker/            # Docker Compose Dateien (geplant)
 │   ├── openhab/
@@ -80,6 +116,21 @@ smart-home-phyton/
 ├── configs/           # Konfigurationsdateien (geplant)
 └── scripts/           # Hilfsskripte (geplant)
 ```
+
+## 🔧 Was wird installiert?
+
+### Basis-Tools (setup-basics.py)
+- **Git**: Versionskontrolle für das Repository
+- **Python3 & pip**: Python-Runtime und Paket-Manager
+- **curl & wget**: Download-Tools für weitere Installationen  
+- **vim & nano**: Text-Editoren für Konfigurationen
+- **Docker-Abhängigkeiten**: ca-certificates, gnupg, software-properties-common
+- **Archiv-Tools**: unzip für komprimierte Dateien
+
+### Smart Home System (install.py)
+- **System-Update**: Aktualisierung aller Pakete
+- **Docker & Docker Compose**: Container-Plattform
+- **Automatischer Neustart**: Für vollständige Docker-Aktivierung
 
 ## 🔧 Konfiguration
 
