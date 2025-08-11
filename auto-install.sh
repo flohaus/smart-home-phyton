@@ -62,11 +62,11 @@ check_root() {
 update_system() {
     echo -e "${BLUE}${BOLD}📋 System wird aktualisiert...${NC}"
     
-    echo -e "${CYAN}→ apt update${NC}"
-    apt update -qq
+    echo -e "${CYAN}→ apt-get update${NC}"
+    apt-get update -qq > /dev/null 2>&1
     
-    echo -e "${CYAN}→ apt upgrade${NC}"
-    DEBIAN_FRONTEND=noninteractive apt upgrade -y -qq
+    echo -e "${CYAN}→ apt-get upgrade${NC}"
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -qq > /dev/null 2>&1
     
     echo -e "${GREEN}✓ System aktualisiert${NC}"
 }
@@ -79,7 +79,7 @@ install_python() {
     fi
     
     echo -e "${BLUE}🐍 Python3 wird installiert...${NC}"
-    apt install -y python3 python3-pip python3-venv python3-dev
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-pip python3-venv python3-dev > /dev/null 2>&1
     echo -e "${GREEN}✓ Python3 installiert: $(python3 --version)${NC}"
 }
 
@@ -91,7 +91,7 @@ install_curl() {
     fi
     
     echo -e "${BLUE}📦 curl wird installiert...${NC}"
-    apt install -y curl
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq curl > /dev/null 2>&1
     echo -e "${GREEN}✓ curl installiert${NC}"
 }
 
@@ -103,7 +103,7 @@ install_git() {
     fi
     
     echo -e "${BLUE}🔧 Git wird installiert...${NC}"
-    apt install -y git
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git > /dev/null 2>&1
     echo -e "${GREEN}✓ Git installiert: $(git --version | head -1)${NC}"
 }
 
@@ -124,7 +124,7 @@ install_essential_tools() {
     )
     
     echo -e "${CYAN}→ Installiere: ${tools[*]}${NC}"
-    apt install -y "${tools[@]}"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${tools[@]}" > /dev/null 2>&1
     
     echo -e "${GREEN}✓ Essenzielle Tools installiert${NC}"
 }
@@ -138,23 +138,23 @@ install_docker() {
     
     echo -e "${BLUE}${BOLD}🐳 Docker wird installiert...${NC}"
     
-    # Docker über apt installieren (einfacher für Raspberry Pi)
+    # Docker über apt-get installieren (einfacher für Raspberry Pi)
     echo -e "${CYAN}→ Docker installieren${NC}"
-    apt install -y docker.io docker-compose
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose > /dev/null 2>&1
     
     # Docker Service starten und aktivieren
     echo -e "${CYAN}→ Docker Service starten${NC}"
-    systemctl start docker
-    systemctl enable docker
+    systemctl start docker > /dev/null 2>&1
+    systemctl enable docker > /dev/null 2>&1
     
     # Pi User zur Docker-Gruppe hinzufügen
     echo -e "${CYAN}→ Benutzer 'pi' zur Docker-Gruppe hinzufügen${NC}"
-    usermod -aG docker pi || echo "Benutzer 'pi' nicht gefunden - übersprungen"
+    usermod -aG docker pi > /dev/null 2>&1 || echo "   Benutzer 'pi' nicht gefunden - übersprungen"
     
     # Aktuellen Benutzer zur Docker-Gruppe hinzufügen (falls nicht root)
     if [ "$SUDO_USER" ]; then
         echo -e "${CYAN}→ Benutzer '$SUDO_USER' zur Docker-Gruppe hinzufügen${NC}"
-        usermod -aG docker "$SUDO_USER"
+        usermod -aG docker "$SUDO_USER" > /dev/null 2>&1
     fi
     
     echo -e "${GREEN}✓ Docker installiert: $(docker --version)${NC}"
